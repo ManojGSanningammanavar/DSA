@@ -103,3 +103,27 @@ vector<int> result;
     }
     return result;
 */
+
+//leetcode : 643
+
+class Solution {
+public:
+    double findMaxAverage(vector<int>& nums, int k) {
+        int n =  nums.size();
+        double windowsum = 0;
+        for(int i =0; i< k ; i++){
+            windowsum += nums[i];
+        }
+
+        double max = windowsum;
+        for(int i = k ; i<n; i++){
+            windowsum += nums[i];
+            windowsum -=nums[i-k];
+            if(windowsum > max){
+                max = windowsum;
+            }
+        }
+        return max/k;
+
+    }
+};
