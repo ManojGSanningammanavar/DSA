@@ -149,3 +149,32 @@ public:
         return false;
     }
 };
+
+// leetcode : 3
+
+class Solution {
+public:
+    int lengthOfLongestSubstring(string s) {
+        vector<int> freq(256,0);
+
+        int n = s.size();
+        int left =0;
+        int maxlen = 0;
+        
+        for(int right =0 ; right< n ; right++){
+            char ch = s[right];
+            freq[ch]++;
+          while(freq[ch]>1){
+            char leftch = s[left];
+            freq[leftch]--;
+            left++;
+          }
+
+          int curlen = right - left +1;
+          if(curlen > maxlen){
+            maxlen = curlen;
+          }
+        }
+    return maxlen;
+    }
+};
