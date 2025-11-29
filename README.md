@@ -178,3 +178,31 @@ public:
     return maxlen;
     }
 };
+
+//leetcode 209
+class Solution {
+public:
+    int minSubArrayLen(int target, vector<int>& nums) {
+        int n = nums.size();
+        long long sum = 0;
+        int left =0;
+        int minlen = INT_MAX;
+
+        for(int right =0; right<n; right++ ){
+            sum += nums[right];
+
+            while(sum >= target){
+                int curlen = right - left + 1;
+                if( curlen < minlen ){
+                    minlen = curlen;
+                }
+
+                sum -= nums[left];
+                left++;
+            }
+        }
+        if(minlen == INT_MAX) return 0;
+        return minlen;
+
+    }
+};
