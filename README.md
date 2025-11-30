@@ -227,3 +227,46 @@ public:
         return prefix[right+1]-prefix[left];
     }
 };
+
+//leetcode 1590
+#include <bits/stdc++.h>
+using namespace std;
+
+class Solution {
+public:
+    int minSubarray(vector<int>& nums, int p) {
+        long long total = 0;
+        for (int x : nums) total += x;
+
+        int rem = total % p;
+        if (rem == 0) return 0;  // already divisible, no need to remove anything
+
+        int n = nums.size();
+        unordered_map<int, int> lastPos;  // prefixMod -> last index
+        long long prefix = 0;
+        int ans = n;
+
+        // prefix before starting = 0 at index -1
+        lastPos[0] = -1;
+
+        for (int i = 0; i < n; i++) {
+            prefix = (prefix + nums[i]) % p;
+            int cur = (int)prefix;
+
+            // We need prev such that (cur - prev) % p == rem
+            // => prev = (cur - rem + p) % p
+            int need = (cur - rem + p) % p;
+
+            if (lastPos.find(need) != lastPos.end()) {
+                int j = lastPos[need];      // index of that prefix
+                int len = i - j;            // subarray (j+1 ... i)
+                ans = min(ans, len);
+            }
+
+            // store/overwrite last index for current prefix mod
+            lastPos[cur] = i;
+        }
+
+        return ans == n ? -1 : ans;
+    }
+};
