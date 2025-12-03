@@ -270,3 +270,88 @@ public:
         return ans == n ? -1 : ans;
     }
 };
+
+//Leetcode - 3625
+#include <bits/stdc++.h>
+using namespace std;
+
+class Solution {
+public:
+    long long countTrapezoids(vector<vector<int>>& points) {
+        int n = points.size();
+
+        // cntLine[k][b] = how many segments lie on line y = kx + b (or x = b if vertical)
+        unordered_map<double, unordered_map<double, int>> cntLine;
+
+        // cntMid[p][k] = how many segments have midpoint encoded as p and slope k
+        unordered_map<long long, unordered_map<double, int>> cntMid;
+
+        cntLine.reserve(n * n);
+        cntMid.reserve(n * n);
+
+        for (int i = 0; i < n; ++i) {
+            int x1 = points[i][0];
+            int y1 = points[i][1];
+            for (int j = 0; j < i; ++j) {
+                int x2 = points[j][0];
+                int y2 = points[j][1];
+
+                int dx = x2 - x1;
+                int dy = y2 - y1;
+
+                // --- 1) Slope & intercept for the supporting line ---
+                double k, b;
+                if (dx == 0) {
+                    // vertical line: use special slope value, intercept = x
+                    k = 1e9;
+                    b = x1;
+                } else {
+                    k = (double)dy / dx;
+                    // b = y1 - k * x1, but written to reduce precision issues
+                    long long num = 1LL * y1 * dx - 1LL * x1 * dy;
+                    b = (double)num / dx;
+                }
+
+                // normalize -0.0 to 0.0 to avoid separate buckets
+                if (k == -0.0) k = 0.0;
+                if (b == -0.0) b = 0.0;
+
+                cntLine[k][b]++;
+
+                // --- 2) Midpoint encoding for parallelogram counting ---
+                int mx = x1 + x2;  // in [-2000, 2000]
+                int my = y1 + y2;  // in [-2000, 2000]
+                // shift to non-negative and pack into one 64-bit key
+                long long key = (long long)(mx + 2000) * 4001 + (my + 2000);
+                cntMid[key][k]++;
+            }
+        }
+
+        long long ans = 0;
+
+        // (A) Count all pairs of parallel segments on different lines
+        for (auto &entry : cntLine) {
+            auto &byIntercept = entry.second;
+            long long prefix = 0;
+            for (auto &p : byIntercept) {
+                long long t = p.second;
+                ans += prefix * t; // pairs between previous lines and this line
+                prefix += t;
+            }
+        }
+
+        // (B) Subtract parallelograms (each was counted twice above)
+        for (auto &entry : cntMid) {
+            auto &bySlope = entry.second;
+            long long prefix = 0;
+            for (auto &p : bySlope) {
+                long long c = p.second;
+                ans -= prefix * c; // each such pair is one parallelogram
+                prefix += c;
+            }
+        }
+
+        return ans;
+    }
+};
+
