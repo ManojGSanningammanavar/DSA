@@ -355,3 +355,45 @@ public:
     }
 };
 
+
+// Leetcode - 61
+class Solution {
+
+public:
+    ListNode* FindNth(ListNode* temp , int k ){
+        int ct = 1;
+        while(temp!=NULL){
+            if(ct==k) return temp;
+            temp = temp->next;
+            ct++;
+        }
+        return temp;
+    }
+public:
+
+
+    ListNode* rotateRight(ListNode* head, int k) {
+        ListNode* tail = head;
+        int len = 1;
+        if(head==NULL || k ==0) return head;
+        while(tail->next!=NULL){
+            tail = tail->next;
+            len+=1;
+
+        }
+
+        if(k%len ==  0) return head;
+
+        k= k % len;
+
+        tail->next = head;
+
+        ListNode* newlastnode = FindNth(head, len-k);
+
+        head = newlastnode->next;
+        newlastnode->next = NULL;
+
+        return head;
+    }
+    
+};
