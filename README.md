@@ -411,3 +411,23 @@ public:
         }
     }
 };
+//leetcode  78
+class Solution {
+public:
+    vector<vector<int>> subsets(vector<int>& nums) {
+        vector<vector<int>> res;
+        vector<int> temp;
+
+        function<void(int)> dfs = [&](int i) {
+            res.push_back(temp);
+            for (int j = i; j < nums.size(); j++) {
+                temp.push_back(nums[j]);
+                dfs(j + 1);
+                temp.pop_back();
+            }
+        };
+
+        dfs(0);
+        return res;
+    }
+};
